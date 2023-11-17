@@ -15,7 +15,7 @@ import axios from 'axios';
 
 export const App = () => {
   async function onClick() {
-    const data = await axios.get('/api/cpae').then((res) => res.data);
+    const data = await axios.get('http://localhost:8000/api/cpae/').then((res) => res.data);
     console.log(data);
   }
   return (
