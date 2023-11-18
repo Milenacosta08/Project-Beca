@@ -1,0 +1,24 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 243 34% 6%;
+    --background-modal: 206 72% 89%;
+
+    --muted: 240 4.8% 95.0%;
+
+    --blue-primary: 219 81% 17%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background;
+  }
+}
+
