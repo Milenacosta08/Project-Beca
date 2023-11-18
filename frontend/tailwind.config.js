@@ -54,6 +54,7 @@ module.exports = {
         },
 
         blue_primary: "hsl(var(--blue-primary))",
+        blue_light: "hsl(var(--blue-light))",
       },
       borderRadius: {
         lg: "var(--radius)",
