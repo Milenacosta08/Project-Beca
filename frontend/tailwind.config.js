@@ -18,11 +18,11 @@ module.exports = {
     extend: {
       colors: {
         border: "hsl(var(--border))",
-        border_input: "hsl(var(--blue-primary))",
+        border_input: "var(--blue-primary)",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
-        background: "hsl(var(--background))",
-        background_modal: "hsl(var(--background-modal))",
+        background: "var(--background)",
+        background_modal: "var(--background-modal)",
         foreground: "hsl(var(--foreground))",
         primary: {
           DEFAULT: "hsl(var(--primary))",
@@ -53,8 +53,9 @@ module.exports = {
           foreground: "hsl(var(--card-foreground))",
         },
 
-        blue_primary: "hsl(var(--blue-primary))",
-        blue_light: "hsl(var(--blue-light))",
+        blue_primary: "var(--blue-primary)",
+        blue_light: "var(--blue-light)",
+        blue_checkbox: "var(--blue-checkbox)",
       },
       borderRadius: {
         lg: "var(--radius)",

@@ -16,11 +16,11 @@ const Checkbox = React.forwardRef<
   React.ElementRef<typeof CheckboxPrimitive.Root>,
   CheckboxProps
 >(({ className, id, label, ...props }, ref) => (
-  <>
+  <div className="flex items-center">
     <CheckboxPrimitive.Root
       ref={ref}
       className={cn(
-        "peer h-4 w-4 shrink-0 rounded-md border focus-visible:outline-none focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground",
+        "h-4 w-4 bg-white focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-blue_checkbox data-[state=checked]:text-white",
         className
       )}
       {...props}
@@ -32,9 +32,9 @@ const Checkbox = React.forwardRef<
       </CheckboxPrimitive.Indicator>
     </CheckboxPrimitive.Root>
     {!!label && (
-      <Label className="ml-3" htmlFor={id}>{label}</Label>
+      <Label className="ml-3 font-light" htmlFor={id}>{label}</Label>
     )}
-  </>
+  </div>
 ))
 Checkbox.displayName = CheckboxPrimitive.Root.displayName
 
