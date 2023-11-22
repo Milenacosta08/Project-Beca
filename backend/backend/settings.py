@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'cpae.apps.CpaeConfig',
     'graduations.apps.GraduationsConfig',
+    'project.apps.ProjectConfig',
 ]
 
 MIDDLEWARE = [
