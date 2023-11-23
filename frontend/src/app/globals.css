@@ -6,18 +6,29 @@
   :root {
     --background: hsla(243, 34%, 6%, 1);
     --background-modal: hsla(206, 72%, 89%, 0.85);
+    --foreground: 210 2% 19%;
 
     --muted: 240 4.8% 95.0%;
+    --muted-foreground: 240 3.8% 46.1%;
+ 
+    --accent: 240 4.8% 95.9%;
+    --accent-foreground: 240 5.9% 10%;
 
     --blue-primary: hsla(219, 81%, 17%, 1);
     --blue-light: hsla(217, 97%, 57%, 1);
     --blue-checkbox: hsla(217, 97%, 57%, 1);
+
+    --white-primary: hsla(197, 100%, 95%, 1);
+    --white-title: hsla(204, 45%, 98%, 1);
+
+    --primary: 0 0% 98%;
+    --primary-foreground: 240 5.9% 10%;
   }
 }
 
 @layer base {
   * {
-    @apply border-border;
+    @apply border-border_input_white;
   }
   body {
     @apply bg-background;
