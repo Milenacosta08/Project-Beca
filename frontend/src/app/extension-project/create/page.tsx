@@ -1,3 +1,4 @@
+
 'use client'
 import * as z from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -5,14 +6,16 @@ import { useForm } from "react-hook-form"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { addDays } from "date-fns"
-import { useState } from "react"
-import { DateRange } from "react-day-picker"
 import Image from "next/image"
 import { InputDate } from "@/components/input-date"
 import { AiOutlineLink } from "react-icons/ai";
 import { BsArrowRight } from "react-icons/bs";
 import { api } from "@/services/api"
+import { ExtensionProject } from "../edit/[id]/page"
+
+type FormProps = {
+  project?: ExtensionProject 
+}
 
 const extensionProjectFormSchema = z.object({
     title: z
@@ -20,7 +23,6 @@ const extensionProjectFormSchema = z.object({
       .min(2, {
         message: "O título deve ter pelo menos 2 caracteres.",
       }),
-      // regisration_date: range date
     registration_date: z.object({
       from: z.date({
         required_error: "Por favor, informe a data de início do período de inscrição projeto.",
@@ -52,46 +54,42 @@ const extensionProjectFormSchema = z.object({
     offerer: z.string({
       required_error: "Por favor, informe a oferta do projeto.",
     }),
-  })
+})
   
-  type ExtensionProjectFormValues = z.infer<typeof extensionProjectFormSchema>
+type ExtensionProjectFormValues = z.infer<typeof extensionProjectFormSchema>
 
-export default function CreateExtensionProject() {
-  const [dateRegistration, setDateRegistration] = useState<DateRange | undefined>({
-    from: new Date(),
-    to: addDays(new Date(), 7)
-  })
-  const [dateValidity, setDateValidity] = useState<DateRange | undefined>({
-    from: new Date(),
-    to: addDays(new Date(), 30)
-  })
+export default function CreateExtensionProject({ project }: FormProps) {
+  const isEdit = !!project
+  const { ...defaultValues } = project || ({} as ExtensionProject)
 
   const form = useForm<ExtensionProjectFormValues>({
     resolver: zodResolver(extensionProjectFormSchema),
-    defaultValues: {
-      title: "",
-      registration_date: {
-        from: new Date(),
-        to: addDays(new Date(), 7),
-      },
-      validity_date: {
-        from: new Date(),
-        to: addDays(new Date(), 30),
-      },
-      vacancies: "0",
-      value: "",
-      duration: "",
-      link: "",
-      offerer: "",
-    },
+    defaultValues: isEdit ? {
+      ...defaultValues, 
+      vacancies: defaultValues.vacancies.toString(), 
+    } : {},
   })
 
   async function onSubmit(data: ExtensionProjectFormValues) {
-    // console.log(JSON.stringify(data, null, 2))
     const { title, vacancies, value, duration, link, offerer, registration_date, validity_date } = data
 
-    const response = await api("/api/project/create/", {
+    const response = !isEdit ? 
+     await api("/api/project/create/", {
       method: "POST",
+      body: JSON.stringify({
+        title,
+        vacancies,
+        value,
+        duration,
+        link,
+        offerer,
+        registration_date_start: registration_date.from.toISOString().split('T')[0],
+        registration_date_end: registration_date.to.toISOString().split('T')[0],
+        validity_date_start: validity_date.from.toISOString().split('T')[0],
+        validity_date_end: validity_date.to.toISOString().split('T')[0],
+      }),
+    }) : api(`/api/project/update/${project?.id}/`, {
+      method: "PUT",
       body: JSON.stringify({
         title,
         vacancies,
@@ -106,13 +104,11 @@ export default function CreateExtensionProject() {
       }),
     })
 
-    console.log(response)
-
     form.reset();
   }
 
   return (
-    <div className="grid grid-cols-4 w-scren h-screen">
+    <div className="grid grid-cols-4 w-screen h-screen">
       <div className="flex items-center">
         <Image 
             src="/images/pattern.png"
@@ -238,7 +234,7 @@ export default function CreateExtensionProject() {
             />
           </div>
           <Button className="flex-col w-[124px] font-normal" type="submit" variant={"ghost"}>
-            Enviar
+            { isEdit ? "Salvar" : "Enviar" }
             <BsArrowRight className="mt-1 w-14 h-7" />
           </Button>
         </form>
@@ -246,3 +242,4 @@ export default function CreateExtensionProject() {
     </div>
   )
 }
+
