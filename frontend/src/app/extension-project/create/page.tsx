@@ -11,11 +11,14 @@ import { InputDate } from "@/components/input-date"
 import { AiOutlineLink } from "react-icons/ai";
 import { BsArrowRight } from "react-icons/bs";
 import { api } from "@/services/api"
-import { ExtensionProject } from "../edit/[id]/page"
-
-type FormProps = {
-  project?: ExtensionProject 
-}
+import { cn } from "@/lib/utils"
+import { addDays, format } from "date-fns"
+import React from "react"
+import { DateRange } from "react-day-picker"
+import { LiaCalendarWeekSolid } from "react-icons/lia"
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { pt } from "date-fns/locale"
+import { Calendar } from "@/components/ui/calendar"
 
 const extensionProjectFormSchema = z.object({
     title: z
@@ -58,23 +61,41 @@ const extensionProjectFormSchema = z.object({
   
 type ExtensionProjectFormValues = z.infer<typeof extensionProjectFormSchema>
 
-export default function CreateExtensionProject({ project }: FormProps) {
-  const isEdit = !!project
-  const { ...defaultValues } = project || ({} as ExtensionProject)
+export default function CreateExtensionProject() {
+  const [dateRegistration, setDateRegistration] = React.useState<DateRange | undefined>({
+    from: new Date(),
+    to: addDays(new Date(), 20),
+  })
+
+  const [dateValidity, setDateValidity] = React.useState<DateRange | undefined>({
+    from: new Date(),
+    to: addDays(new Date(), 20),
+  })
 
   const form = useForm<ExtensionProjectFormValues>({
     resolver: zodResolver(extensionProjectFormSchema),
-    defaultValues: isEdit ? {
-      ...defaultValues, 
-      vacancies: defaultValues.vacancies.toString(), 
-    } : {},
+    defaultValues: {
+      title: "",
+      vacancies: "",
+      value: "",
+      duration: "",
+      link: "",
+      offerer: "",
+      registration_date: {
+        from: new Date(),
+        to: addDays(new Date(), 20),
+      },
+      validity_date: {
+        from: new Date(),
+        to: addDays(new Date(), 20),
+      }
+    }
   })
 
   async function onSubmit(data: ExtensionProjectFormValues) {
     const { title, vacancies, value, duration, link, offerer, registration_date, validity_date } = data
 
-    const response = !isEdit ? 
-     await api("/api/project/create/", {
+    const response = await api("/api/project/create/", {
       method: "POST",
       body: JSON.stringify({
         title,
@@ -88,21 +109,8 @@ export default function CreateExtensionProject({ project }: FormProps) {
         validity_date_start: validity_date.from.toISOString().split('T')[0],
         validity_date_end: validity_date.to.toISOString().split('T')[0],
       }),
-    }) : api(`/api/project/update/${project?.id}/`, {
-      method: "PUT",
-      body: JSON.stringify({
-        title,
-        vacancies,
-        value,
-        duration,
-        link,
-        offerer,
-        registration_date_start: registration_date.from.toISOString().split('T')[0],
-        registration_date_end: registration_date.to.toISOString().split('T')[0],
-        validity_date_start: validity_date.from.toISOString().split('T')[0],
-        validity_date_end: validity_date.to.toISOString().split('T')[0],
-      }),
     })
+    console.log(response)
 
     form.reset();
   }
@@ -142,9 +150,47 @@ export default function CreateExtensionProject({ project }: FormProps) {
                 render={({ field }) => (
                   <FormItem className="flex flex-col">
                     <FormLabel className="text-white_primary">Período de Inscrição</FormLabel>
-                        <FormControl>
-                          <InputDate {...field} />
-                        </FormControl>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              id="date"
+                              size={"sm"}
+                              variant={'date'}
+                              className={cn(
+                                'w-[100%] flex pl-3 justify-between font-normal bg-background text-white_primary placeholder:text-white_primary',
+                                !dateRegistration && 'text-muted-foreground',
+                              )}
+                            >
+                              {dateRegistration?.from ? (
+                                dateRegistration.to ? (
+                                  <>
+                                    {format(dateRegistration.from, 'LLL dd, y', { locale: pt })} -{' '}
+                                    {format(dateRegistration.to, 'LLL dd, y', { locale: pt })}
+                                  </>
+                                ) : (
+                                  format(dateRegistration.from, 'LLL dd, y', { locale: pt })
+                                )
+                              ) : (
+                                <span>Selecione a data</span>
+                              )}
+                              <LiaCalendarWeekSolid className="h-7 w-7" />
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0 border-input" align="start">
+                          <Calendar
+                            initialFocus
+                            mode="range"
+                            defaultMonth={dateRegistration?.from}
+                            selected={dateRegistration}
+                            onSelect={setDateRegistration}
+                            numberOfMonths={1}
+                            locale={pt}
+                            {...field}
+                          />
+                        </PopoverContent>
+                      </Popover>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -164,15 +210,53 @@ export default function CreateExtensionProject({ project }: FormProps) {
               />
             </div>
             <div className="flex justify-between">
-              <FormField
+            <FormField
                 control={form.control}
                 name="validity_date"
                 render={({ field }) => (
                   <FormItem className="flex flex-col">
-                    <FormLabel className="text-white_primary">Período de Vigência</FormLabel>
-                      <FormControl>
-                        <InputDate {...field} />
-                      </FormControl>
+                    <FormLabel className="text-white_primary">Período de Inscrição</FormLabel>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              id="date"
+                              size={"sm"}
+                              variant={'date'}
+                              className={cn(
+                                'w-[100%] flex pl-3 justify-between font-normal bg-background text-white_primary placeholder:text-white_primary',
+                                !dateValidity && 'text-muted-foreground',
+                              )}
+                            >
+                              {dateValidity?.from ? (
+                                dateValidity.to ? (
+                                  <>
+                                    {format(dateValidity.from, 'LLL dd, y', { locale: pt })} -{' '}
+                                    {format(dateValidity.to, 'LLL dd, y', { locale: pt })}
+                                  </>
+                                ) : (
+                                  format(dateValidity.from, 'LLL dd, y', { locale: pt })
+                                )
+                              ) : (
+                                <span>Selecione a data</span>
+                              )}
+                              <LiaCalendarWeekSolid className="h-7 w-7" />
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0 border-input" align="start">
+                          <Calendar
+                            initialFocus
+                            mode="range"
+                            defaultMonth={dateValidity?.from}
+                            selected={dateValidity}
+                            onSelect={setDateValidity}
+                            numberOfMonths={1}
+                            locale={pt}
+                            {...field}
+                          />
+                        </PopoverContent>
+                      </Popover>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -234,7 +318,7 @@ export default function CreateExtensionProject({ project }: FormProps) {
             />
           </div>
           <Button className="flex-col w-[124px] font-normal" type="submit" variant={"ghost"}>
-            { isEdit ? "Salvar" : "Enviar" }
+            Enviar
             <BsArrowRight className="mt-1 w-14 h-7" />
           </Button>
         </form>
