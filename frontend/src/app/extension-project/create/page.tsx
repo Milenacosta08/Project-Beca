@@ -113,7 +113,6 @@ export default function CreateExtensionProject() {
         validity_date_end: validity_date.to.toISOString().split('T')[0],
       }),
     })
-    console.log(response)
 
     form.reset();
   }

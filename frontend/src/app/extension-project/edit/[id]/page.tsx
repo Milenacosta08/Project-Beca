@@ -131,8 +131,6 @@ export default function EditExtensionProject({ params: { id } }: FormProps) {
       },
     });
 
-    console.log(project)
-
     setLoading(false);
     
     return response

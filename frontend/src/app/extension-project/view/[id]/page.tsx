@@ -43,8 +43,6 @@ export default function ViewExtensionProject({ params: { id } }: FormProps) {
     const project = (await response.json()) as ExtensionProject
     setProject(project)
 
-    console.log(project)
-
     setIsLoading(false);
     
     return response
@@ -83,7 +81,7 @@ export default function ViewExtensionProject({ params: { id } }: FormProps) {
               </div>
               <div className="flex flex-col gap-8 px-8">
                 <div className="flex items-start gap-5">
-                  <h2 className="text-xl text-center font-normal text-white_title">Decrição:</h2>
+                  <h2 className="text-xl text-center font-normal text-white_title">Descrição:</h2>
                   <p className="text-white_primary font-extralight">{project.description}</p>
                 </div>
                 <div className="flex items-start gap-40">
