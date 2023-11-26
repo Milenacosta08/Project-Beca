@@ -17,13 +17,16 @@ import { LiaCalendarWeekSolid } from "react-icons/lia"
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { pt } from "date-fns/locale"
 import { Calendar } from "@/components/ui/calendar"
+import { Textarea } from "@/components/ui/textarea"
 
 const extensionProjectFormSchema = z.object({
-    title: z
-      .string()
+    title: z.string()
       .min(2, {
         message: "O título deve ter pelo menos 2 caracteres.",
       }),
+    description: z.string({
+      required_error: "Por favor, informe a descrição do projeto."
+    }),
     registration_date: z.object({
       from: z.date({
         required_error: "Por favor, informe a data de início do período de inscrição projeto.",
@@ -74,6 +77,7 @@ export default function CreateExtensionProject() {
     resolver: zodResolver(extensionProjectFormSchema),
     defaultValues: {
       title: "",
+      description: "",
       vacancies: "",
       value: "",
       duration: "",
@@ -91,12 +95,13 @@ export default function CreateExtensionProject() {
   })
 
   async function onSubmit(data: ExtensionProjectFormValues) {
-    const { title, vacancies, value, duration, link, offerer, registration_date, validity_date } = data
+    const { title, description, vacancies, value, duration, link, offerer, registration_date, validity_date } = data
 
     const response = await api("/api/project/create/", {
       method: "POST",
       body: JSON.stringify({
         title,
+        description,
         vacancies,
         value,
         duration,
@@ -136,6 +141,19 @@ export default function CreateExtensionProject() {
                   <FormLabel className="text-white_primary">Título</FormLabel>
                   <FormControl>
                     <Input className="text-white_primary font-light border-border_input_white" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-white_primary">Descrição</FormLabel>
+                  <FormControl>
+                    <Textarea className="text-white_primary font-light border-border_input_white" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

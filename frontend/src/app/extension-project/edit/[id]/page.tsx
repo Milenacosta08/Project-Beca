@@ -19,10 +19,12 @@ import { pt } from "date-fns/locale"
 import { Calendar } from "@/components/ui/calendar"
 import { Loading } from "@/components/loading"
 import { useRouter } from "next/navigation"
+import { Textarea } from "@/components/ui/textarea"
 
 interface ExtensionProject {
   id: string
   title: string
+  description: string
   vacancies: number
   value: string
   duration: string
@@ -46,11 +48,13 @@ function createLocalDate(dateString: string): Date {
 }
 
 const extensionProjectFormSchema = z.object({
-    title: z
-      .string()
+    title: z.string()
       .min(2, {
         message: "O título deve ter pelo menos 2 caracteres.",
       }),
+    description: z.string({
+        required_error: "Por favor, informe a descrição do projeto."
+    }),
     registration_date: z.object({
       from: z.date({
         required_error: "Por favor, informe a data de início do período de inscrição projeto.",
@@ -111,6 +115,7 @@ export default function EditExtensionProject({ params: { id } }: FormProps) {
 
     form.reset({
       title: project.title || "",
+      description: project.description || "",
       vacancies: project.vacancies ? project.vacancies.toString() : "",
       value: project.value || "",
       duration: project.duration || "",
@@ -137,6 +142,7 @@ export default function EditExtensionProject({ params: { id } }: FormProps) {
     resolver: zodResolver(extensionProjectFormSchema),
     defaultValues: {
       title: project?.title || "",
+      description: project?.description || "",
       vacancies: project?.vacancies ? project.vacancies.toString() : "",
       value: project?.value || "",
       duration: project?.duration || "",
@@ -154,12 +160,13 @@ export default function EditExtensionProject({ params: { id } }: FormProps) {
   })
 
   async function onSubmit(data: ExtensionProjectFormValues) {
-    const { title, vacancies, value, duration, link, offerer, registration_date, validity_date } = data
+    const { title, description, vacancies, value, duration, link, offerer, registration_date, validity_date } = data
 
     await api(`/api/project/update/${id}/`, {
       method: "PUT",
       body: JSON.stringify({
         title,
+        description,
         vacancies,
         value,
         duration,
@@ -222,6 +229,19 @@ export default function EditExtensionProject({ params: { id } }: FormProps) {
                       <FormLabel className="text-white_primary">Título</FormLabel>
                       <FormControl>
                         <Input className="text-white_primary font-light border-border_input_white" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="description"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-white_primary">Descrição</FormLabel>
+                      <FormControl>
+                        <Textarea className="text-white_primary font-light border-border_input_white" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

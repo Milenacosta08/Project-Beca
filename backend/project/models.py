@@ -4,6 +4,7 @@ from django.db import models
 
 class Project(models.Model):
     title = models.CharField(max_length=200)
+    description = models.CharField(max_length=2000)
     registration_date_start = models.DateField(default=None)
     registration_date_end = models.DateField(default=None)
     validity_date_start = models.DateField(default=None)
