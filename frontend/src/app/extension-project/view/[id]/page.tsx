@@ -7,6 +7,7 @@ import { useEffect, useState } from "react"
 import { LiaEdit } from "react-icons/lia";
 import { GiTrashCan } from "react-icons/gi";
 import { AiOutlineLink } from "react-icons/ai"
+import ModalDelete from "@/components/modal-delete"
 
 interface ExtensionProject {
   id: string
@@ -74,9 +75,7 @@ export default function ViewExtensionProject({ params: { id } }: FormProps) {
                         <LiaEdit size={24} />
                       </Button>
                     </Link>
-                    <Button variant="ghost" size="icon" className="text-white_primary">
-                      <GiTrashCan size={24} />
-                    </Button>
+                    <ModalDelete id={id} entity="project" />
                   </div>
               </div>
               <div className="flex flex-col gap-8 px-8">
