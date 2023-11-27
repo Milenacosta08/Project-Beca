@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'cpae.apps.CpaeConfig',
     'graduations.apps.GraduationsConfig',
     'project.apps.ProjectConfig',
+    'event.apps.EventConfig',
 ]
 
 MIDDLEWARE = [
