@@ -37,6 +37,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
             data = json.loads(request.body)
             project = Project.objects.get(id=id)
             project.title = data['title']
+            project.description = data['description']
             project.registration_date_start = data['registration_date_start']
             project.registration_date_end = data['registration_date_end']
             project.validity_date_start = data['validity_date_start']
