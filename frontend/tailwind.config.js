@@ -57,6 +57,8 @@ module.exports = {
         blue_light: "var(--blue-light)",
         blue_checkbox: "var(--blue-checkbox)",
 
+        purple_primary: "var(--purple-primary)",
+
         white_primary: "var(--white-primary)",
         white_title: "var(--white-title)",
       },
