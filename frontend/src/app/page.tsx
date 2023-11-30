@@ -7,6 +7,7 @@ import { api } from "@/services/api";
 import { useEffect, useState } from "react";
 import Image from 'next/image'
 import { Loading } from "@/components/loading";
+import Carousel from "@/components/carousel";
 
 type Project = {
   id: string
@@ -67,6 +68,21 @@ export default function Home() {
       setIsLoading(false);
     });
   }, [])
+
+  const images = [
+    {
+      key: '1',
+      path: '/images/beca-visual.png'
+    },
+    {
+      key: '2',
+      path: '/images/logo-beca.png'
+    },
+    {
+      key: '3',
+      path: '/images/beca-capa.png'
+    }
+  ]
  
   return (
     <div className="w-screen h-screen">
@@ -78,7 +94,9 @@ export default function Home() {
           </div>
         ):(
           <>
-            <div className="bg-red-400 w-screen h-[60%]"></div>
+            <div className="w-screen h-[60%]">
+              <Carousel images={images} />
+            </div>
             <div className="p-20 h-screen flex flex-col gap-8">
               <div>
                 <div className="flex justify-between items-center">
