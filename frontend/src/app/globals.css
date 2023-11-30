@@ -24,6 +24,8 @@
     --primary: 0 0% 98%;
     --primary-foreground: 240 5.9% 10%;
 
+    --border-separator: hsla(206, 72%, 89%, 0.8);
+
     --purple-primary: hsla(266, 100%, 64%, 0.75);
 
     --radius: 0.5rem;
