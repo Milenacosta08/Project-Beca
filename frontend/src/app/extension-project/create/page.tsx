@@ -18,6 +18,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { pt } from "date-fns/locale"
 import { Calendar } from "@/components/ui/calendar"
 import { Textarea } from "@/components/ui/textarea"
+import { useRouter } from "next/navigation"
 
 const extensionProjectFormSchema = z.object({
     title: z.string()
@@ -63,6 +64,8 @@ const extensionProjectFormSchema = z.object({
 type ExtensionProjectFormValues = z.infer<typeof extensionProjectFormSchema>
 
 export default function CreateExtensionProject() {
+  const router = useRouter()
+
   const [dateRegistration, setDateRegistration] = React.useState<DateRange | undefined>({
     from: new Date(),
     to: addDays(new Date(), 20),
@@ -114,7 +117,7 @@ export default function CreateExtensionProject() {
       }),
     })
 
-    form.reset();
+    router.push("/extension-project")
   }
 
   return (
@@ -230,7 +233,7 @@ export default function CreateExtensionProject() {
                 name="validity_date"
                 render={({ field }) => (
                   <FormItem className="flex flex-col">
-                    <FormLabel className="text-white_primary">Período de Inscrição</FormLabel>
+                    <FormLabel className="text-white_primary">Período de Vigência</FormLabel>
                       <Popover>
                         <PopoverTrigger asChild>
                           <FormControl>

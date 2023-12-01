@@ -16,6 +16,10 @@ module.exports = {
       },
     },
     extend: {
+      maxWidth: {
+        '300': '300px',
+        '350': '350px',
+      },
       colors: {
         border_input_white: "var(--white-primary)",
         border_input: "var(--blue-primary)",
@@ -53,9 +57,13 @@ module.exports = {
           foreground: "hsl(var(--card-foreground))",
         },
 
+        border_separator: "var(--border-separator)",
+
         blue_primary: "var(--blue-primary)",
         blue_light: "var(--blue-light)",
         blue_checkbox: "var(--blue-checkbox)",
+
+        purple_primary: "var(--purple-primary)",
 
         white_primary: "var(--white-primary)",
         white_title: "var(--white-title)",
