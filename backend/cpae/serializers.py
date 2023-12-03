@@ -4,4 +4,4 @@ from .models import Cpae
 class CpaeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cpae
-        fields = ('id', 'user', 'password')
+        fields = ('id', 'username', 'password')
