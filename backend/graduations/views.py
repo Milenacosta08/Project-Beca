@@ -4,8 +4,8 @@ from django.http import Http404
 
 from rest_framework import viewsets
 
-from .models import Graduation, Category
-from .serializers import GraduationSerializer, CategorySerializer
+from .models import Graduation
+from .serializers import GraduationSerializer
 
 import json
 
@@ -17,7 +17,7 @@ class GraduationViewSet(viewsets.ModelViewSet):
         return JsonResponse(GraduationSerializer(graduations, many=True).data, safe=False)
     
 
-    def get(self, id, *args, **kwargs):
+    def get(self, id):
         try:
             graduation = Graduation.objects.get(id=id)
         except Graduation.DoesNotExist:
@@ -26,39 +26,32 @@ class GraduationViewSet(viewsets.ModelViewSet):
     
 
     @csrf_exempt
-    def create(request, *args, **kwargs):
+    def create(request):
         data = json.loads(request.body)
-        categories_data = data.pop('categories')
-        graduation = Graduation.objects.create(**data)
+        serializer = GraduationSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, status=201)
+        return JsonResponse(serializer.errors, status=400)
+    
+
+    @csrf_exempt
+    def update(request, id):
+        data = json.loads(request.body)
+        try:
+            graduation = Graduation.objects.get(id=id)
+        except Graduation.DoesNotExist:
+            return JsonResponse({'error': 'Graduation not found'}, status=404)
         
-        for category_data in categories_data:
-            category = Category.objects.create(**category_data)
-            graduation.categories.add(category)
-        return JsonResponse(GraduationSerializer(graduation).data, safe=False)
-    
+        serializer = GraduationSerializer(graduation, data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data)
+        return JsonResponse(serializer.errors, status=400)
+
 
     @csrf_exempt
-    def update(request, id, *args, **kwargs):
-        data = json.loads(request.body)
-        categories_data = data.pop('categories')
-        graduation = Graduation.objects.get(id=id)
-        graduation.title = data['title']
-        graduation.registration_date_start = data['registration_date_start']
-        graduation.registration_date_end = data['registration_date_end']
-        graduation.duration = data['duration']
-        graduation.vacancies = data['vacancies']
-        graduation.link = data['link']
-        graduation.offerer = data['offerer']
-        graduation.categories.clear()
-        for category_data in categories_data:
-            category = Category.objects.create(**category_data)
-            graduation.categories.add(category)
-        graduation.save()
-        return JsonResponse(GraduationSerializer(graduation).data, safe=False)
-    
-
-    @csrf_exempt
-    def delete(self, id, *args, **kwargs):
+    def delete(self, id):
         try:
             graduation = Graduation.objects.get(id=id)
         except Graduation.DoesNotExist:
@@ -66,25 +59,3 @@ class GraduationViewSet(viewsets.ModelViewSet):
         graduation.delete()
         return JsonResponse({'message': 'Graduation was deleted successfully!'}, status=204)
 
-
-
-class CategoryViewSet(viewsets.ModelViewSet):
-
-    def create(self, request, *args, **kwargs):
-        data = json.loads(request.body)
-        category = Category.objects.create(**data)
-        return JsonResponse(CategorySerializer(category).data, safe=False)
-    
-    def update(self, request, *args, **kwargs):
-        data = json.loads(request.body)
-        category = Category.objects.get(id=data['id'])
-        category.name = data['name']
-        category.save()
-        return JsonResponse(CategorySerializer(category).data, safe=False)
-    
-    def destroy(self, request, *args, **kwargs):
-        data = json.loads(request.body)
-        category = Category.objects.get(id=data['id'])
-        category.delete()
-        return JsonResponse(CategorySerializer(category).data, safe=False)
-    

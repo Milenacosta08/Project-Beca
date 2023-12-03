@@ -214,11 +214,14 @@ export default function EditExtensionProject({ params: { id } }: FormProps) {
         />
       </div>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="col-span-3 flex items-end justify-around">
-          { loading ? ( <Loading /> ) : (
-            <>
+        { loading ? ( 
+          <div className="col-span-3 flex items-center justify-center">
+            <Loading />
+          </div>
+          ) : (
+            <form onSubmit={form.handleSubmit(onSubmit)} className="col-span-3 flex items-end justify-around">
               <div className="space-y-8 p-9 w-[60%]">
-                <h1 className="text-5xl font-bold text-white_title">Informar Projeto de Extensão</h1>
+                <h1 className="text-5xl font-bold text-white_title">Editar Projeto de Extensão</h1>
                 <FormField
                   control={form.control}
                   name="title"
@@ -317,7 +320,7 @@ export default function EditExtensionProject({ params: { id } }: FormProps) {
                     name="validity_date"
                     render={({ field }) => (
                       <FormItem className="flex flex-col">
-                        <FormLabel className="text-white_primary">Período de Inscrição</FormLabel>
+                        <FormLabel className="text-white_primary">Período de Vigência</FormLabel>
                           <Popover>
                             <PopoverTrigger asChild>
                               <FormControl>
@@ -423,9 +426,8 @@ export default function EditExtensionProject({ params: { id } }: FormProps) {
                   Salvar
                   <BsArrowRight className="mt-1 w-14 h-7" />
               </Button>
-            </>
-          )} 
-        </form>
+            </form>
+        )} 
       </Form>
     </div>
   )
