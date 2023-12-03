@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'cpae.apps.CpaeConfig',
     'graduations.apps.GraduationsConfig',
     'project.apps.ProjectConfig',
+    'rest_framework.authtoken',
 ]
 
 MIDDLEWARE = [
@@ -55,7 +56,15 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-REST_FRAMEWORK = {'DEFAULT_PERMISSION_CLASSES': ['rest_framework.permissions.AllowAny']}
+REST_FRAMEWORK = {'DEFAULT_PERMISSION_CLASSES': [
+                        'rest_framework.permissions.AllowAny'
+                    ],
+                  'DEFAULT_AUTHENTICATION_CLASSES': [
+                        'rest_framework.authentication.TokenAuthentication',
+                    ],
+                 }
+
+AUTH_USER_MODEL = 'cpae.Cpae'
 
 CORS_ORIGIN_ALLOW_ALL = True
 
