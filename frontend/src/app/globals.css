@@ -6,6 +6,8 @@
   :root {
     --background: hsla(243, 34%, 6%, 1);
     --background-modal: hsla(206, 72%, 89%, 0.85);
+    --background-options: hsla(208, 31%, 76%, 1);
+
     --foreground: 210 2% 19%;
 
     --muted: 240 4.8% 95.0%;

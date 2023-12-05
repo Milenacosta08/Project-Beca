@@ -7,6 +7,7 @@ import { api } from '@/services/api'
 import { zodResolver } from '@hookform/resolvers/zod'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -24,6 +25,8 @@ const loginFormSchema = z.object({
 type LoginForm = z.infer<typeof loginFormSchema>
 
 export default function Login({ params: { version } }: LoginProps) {
+  const router = useRouter()
+  
   const isCpae = version === "cpae"
 
   const form = useForm<LoginForm>({
@@ -45,7 +48,11 @@ export default function Login({ params: { version } }: LoginProps) {
       }),
     })
 
-    console.log(response)
+    if (response.ok) {
+      router.push("/cpae/")
+    } else {
+      console.log("Erro ao realizar login!")
+    }
 }
 
   return (

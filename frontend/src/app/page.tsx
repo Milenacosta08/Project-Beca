@@ -1,202 +1,118 @@
 'use client'
-import CardActivities from "@/components/card-activities";
 import Navbar from "@/components/navbar";
-import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { api } from "@/services/api";
-import { useEffect, useState } from "react";
 import Image from 'next/image'
 import { Loading } from "@/components/loading";
 import Carousel from "@/components/carousel";
-
-type Project = {
-  id: string
-  title: string
-  description: string
-  offerer: string
-  link: string
-  registration_date_start: string
-  registration_date_end: string
-  validity_date_start: string
-  validity_date_end: string
-  vacancies: number
-  value: string
-  duration: string 
-}
-
-type Graduation = {
-  id: string
-  title: string
-  description: string
-  offerer: string
-  link: string
-  registration_date_start: string
-  registration_date_end: string
-  vacancies: number
-  duration: string
-  categories: {
-    id: string
-    name: string
-  }[]
-}
-
-async function useProjects() {
-  const response = await api('/api/project/list')
-  const data = (await response.json()) as Project[]
-  return data
-}
-
-async function useGraduation() {
-  const response = await api('/api/graduation/list')
-  const data = (await response.json()) as Graduation[]
-  return data
-}
+import { useState } from "react";
 
 export default function Home() {
-  const [projects, setProjects] = useState<Project[]>([])
-  const [graduations, setGraduations] = useState<Graduation[]>([])
-  const [isLoading, setIsLoading] = useState(true)
+    const [isLoading, setIsLoading] = useState(false)
 
-  useEffect(() => {
-    Promise.all([useProjects(), useGraduation()]).then(([projectsData, graduationData]) => {
-      const projectsLatest = projectsData.reverse().slice(0, 3);
-      setProjects(projectsLatest);
-  
-      const graduationsLatest = graduationData.reverse().slice(0, 3);
-      setGraduations(graduationsLatest);
-  
-      setIsLoading(false);
-    });
-  }, [])
+    const images = [
+        {
+          key: '1',
+          path: '/images/beca-visual.png'
+        },
+        {
+          key: '2',
+          path: '/images/logo-beca.png'
+        },
+        {
+          key: '3',
+          path: '/images/beca-capa.png'
+        }
+      ]
 
-  const images = [
-    {
-      key: '1',
-      path: '/images/beca-visual.png'
-    },
-    {
-      key: '2',
-      path: '/images/logo-beca.png'
-    },
-    {
-      key: '3',
-      path: '/images/beca-capa.png'
-    }
-  ]
- 
-  return (
-    <div className="w-screen h-screen">
-      <Navbar />
-      
-        {isLoading ? (
-          <div className="w-screen h-screen flex justify-center items-center">
-            <Loading />
-          </div>
-        ):(
-          <>
-            <div className="w-screen h-[60%]">
-              <Carousel images={images} />
-            </div>
-            <div className="p-20 h-screen flex flex-col gap-8">
-              <div>
-                <div className="flex justify-between items-center">
-                  <h1 className="font-bold text-white_title text-4xl">Pós-Graduação</h1>
-                  <Button variant="ghost" className="w-auto h-7 py-3 px-3 rounded-md hover:bg-purple_primary">
-                    Ver mais
-                  </Button>
-                </div>
-                <div className="flex justify-between pt-8">
-                  {graduations.map((graduation) => (
-                    <div key={graduation.id}>
-                      <CardActivities 
-                        entity="graduation" 
-                        vacancies={graduation.vacancies.toString()} 
-                        title={graduation.title}
-                        offerer={graduation.offerer}
-                        startDate={graduation.registration_date_start}
-                        endDate={graduation.registration_date_end}
-                        categories={graduation.categories ? graduation.categories.map((category) => category.name) : []}
-                        id={parseInt(graduation.id)}
-                      />
-                    </div>
-                  ))}
-                </div>
-                <Separator className="my-16" />
+    return (
+        <div className="w-screen h-screen">
+          <Navbar />
+          
+            {isLoading ? (
+              <div className="w-screen h-screen flex justify-center items-center">
+                <Loading />
               </div>
-              <div>
-                <div className="flex justify-between items-center">
-                  <h1 className="font-bold text-white_title text-4xl">Eventos</h1>
-                  <Button variant="ghost" className="w-auto h-7 py-3 px-3 rounded-md hover:bg-purple_primary">
-                    Ver mais
-                  </Button>
+            ):(
+              <>
+                <div className="w-screen h-[60%]">
+                  <Carousel images={images} />
                 </div>
-                <div className="flex justify-between pt-8">
-                  {projects.map((project) => (
-                    <div key={project.id}>
-                      <CardActivities 
-                        entity="extension-project" 
-                        description={project.description} 
-                        title={project.title}
-                        offerer={project.offerer}
-                        startDate={project.validity_date_start}
-                        endDate={project.validity_date_end}
-                        categories={[]}
-                        id={parseInt(project.id)}
-                      />
-                    </div>
-                  ))}
-                </div>
-                <Separator className="my-16" />
-              </div>
-              <div>
-                <div className="flex justify-between items-center">
-                  <h1 className="font-bold text-white_title text-4xl">Projetos de Extensão</h1>
-                  <Button variant="ghost" className="w-auto h-7 py-3 px-3 rounded-md hover:bg-purple_primary">
-                    Ver mais
-                  </Button>
-                </div>
-                <div className="flex justify-between pt-8">
-                  {projects.map((project) => (
-                    <div key={project.id}>
-                      <CardActivities 
-                        entity="extension-project" 
-                        description={project.description} 
-                        title={project.title}
-                        offerer={project.offerer}
-                        startDate={project.validity_date_start}
-                        endDate={project.validity_date_end}
-                        categories={[]}
-                        id={parseInt(project.id)}
-                      />
-                    </div>
-                  ))}
-                </div>
-                <Separator className="mt-16" />
-              </div>
-              <div className="flex justify-around pb-5">
-                  <Image 
-                    src="/images/beca-visual.png"
-                    width={200}
-                    height={80}
-                    alt="Identidade Visual Beca"
-                  />
-                  <div className="text-border_separator text-sm font-light w-[28%]">
-                    Este sistema foi desenvolvido para fortalecer os laços entre o Instituto Federal de Educação, Ciência e Tecnologia do Ceará - Campus Aracati, seus egressos do curso de Bacharelado em Ciência da Computação e o mercado de trabalho.
+                <div className="p-20 h-screen flex flex-col gap-8">
+                  <div>
+                    <h1 className="font-bold text-white_title text-6xl">Quem Somos</h1>
+                    <p className="font-normal mt-4 text-white_title">A CPAE (Comissão Permanente de Auxílio a Egressos) é um grupo responsável pelo auxílio dos graduados após sua vida acadêmica. Com o objetivo de promover o bem-estar dos egressos, apresentamos o Beca, um ambiente dedicado a você, onde pode:</p>
                   </div>
-                  <div className="w-auto">
-                    <span className="text-border_separator text-sm font-semibold">Fale Conosco</span>
-                    <p className="text-border_separator text-sm font-light">becaifce@gmail.com</p>
+                  
+                  <div className="flex flex-col gap 8">
+                    <h2 className="font-bold text-white_title text-3xl">Egresso</h2>
+                    <div className="grid grid-cols-5 h-[70%] w-full gap-5 p-5">
+                      <div className="col-span-1 bg-purple_primary flex items-center justify-center rounded-md p-3">
+                        <Image 
+                          src="/images/conecte-icon.png"
+                          width={100}
+                          height={100}
+                          alt="egresso icone"
+                        />
+                      </div>
+                      <div className="col-span-4 bg-purple_primary rounded-md px-5 py-3">
+                        <p className="font-bold text-white_title">Conecte-se</p>
+                        <p className="font-normal text-white_title">Estabeleça um canal de comunicação direta com a instituição, tornando mais acessível e conveniente a troca de informações.</p>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-5 h-[70%] w-full gap-5 p-5">
+                      <div className="col-span-4 bg-blue_light rounded-md p-3">
+                        <p className="font-bold text-white_title">Oportunidades</p>
+                        <p className="font-normal text-white_title">Acesse oportunidades de emprego, cursos de aperfeiçoamento e projetos de extensão.</p>
+                      </div>
+                      <div className="col-span-1 bg-blue_light flex items-center justify-center rounded-md px-5 py-3">
+                        <Image 
+                          src="/images/oportunidade-icon.png"
+                          width={100}
+                          height={100}
+                          alt="oportunidades icone"
+                        />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-5 h-[70%] w-full gap-5 p-5">
+                      <div className="col-span-1 bg-blue_primary flex items-center justify-center rounded-md p-3">
+                        <Image 
+                          src="/images/evento-icon.png"
+                          width={100}
+                          height={100}
+                          alt="evento icone"
+                        />
+                      </div>
+                      <div className="col-span-4 bg-blue_primary rounded-md px-5 py-3">
+                        <p className="font-bold text-white_title">Eventos</p>
+                        <p className="font-normal text-white_title">Descubra eventos acadêmicos, científicos e culturais promovidos pela instituição.</p>
+                      </div>
+                    </div>
                   </div>
-                  <div className="w-auto">
-                    <span className="text-border_separator text-sm font-semibold">Informações</span>
-                    <p className="text-border_separator text-sm font-light">Termos e Condições</p>
-                    <p className="text-border_separator text-sm font-light mt-2">Políticas de Privacidade</p>
+                  <Separator />
+                  <div className="flex justify-around pb-5">
+                      <Image 
+                        src="/images/beca-visual.png"
+                        width={200}
+                        height={80}
+                        alt="Identidade Visual Beca"
+                      />
+                      <div className="text-border_separator text-sm font-light w-[28%]">
+                        Este sistema foi desenvolvido para fortalecer os laços entre o Instituto Federal de Educação, Ciência e Tecnologia do Ceará - Campus Aracati, seus egressos do curso de Bacharelado em Ciência da Computação e o mercado de trabalho.
+                      </div>
+                      <div className="w-auto">
+                        <span className="text-border_separator text-sm font-semibold">Fale Conosco</span>
+                        <p className="text-border_separator text-sm font-light">becaifce@gmail.com</p>
+                      </div>
+                      <div className="w-auto">
+                        <span className="text-border_separator text-sm font-semibold">Informações</span>
+                        <p className="text-border_separator text-sm font-light">Termos e Condições</p>
+                        <p className="text-border_separator text-sm font-light mt-2">Políticas de Privacidade</p>
+                      </div>
+    
                   </div>
-
-              </div>
-            </div>
-          </>
-        )}
-    </div>
-  )
+                </div>
+              </>
+            )}
+        </div>
+      )
 }
