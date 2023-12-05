@@ -9,5 +9,5 @@ urlpatterns = [
     path('delete/<int:id>/', views.EventViewSet.delete),
     path('get/<int:id>/', views.EventViewSet.get),
 
-   # path('listPrograms/', views.EventViewSet.listPrograms),
+    # path('listPrograms/', views.EventViewSet.listPrograms),
 ]

@@ -1,20 +1,23 @@
 from rest_framework import serializers
-from .models import Category, Program, Event
-
-class CategorySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Category
-        fields = ['id', 'name']
+from .models import Program, Event
 
 class ProgramSerializer(serializers.ModelSerializer):
+    event = serializers.PrimaryKeyRelatedField(read_only=True)
+
     class Meta:
         model = Program
-        fields = ['id', 'title', 'local', 'date', 'hour']
+        fields = ['id', 'title', 'local', 'date', 'hour', 'event']
 
 class EventSerializer(serializers.ModelSerializer):
-    categories = CategorySerializer(many=True, read_only=True)
-    programs = ProgramSerializer(read_only=True)
+    programs = ProgramSerializer(many=True)
 
     class Meta:
         model = Event
-        fields = ['id', 'title', 'duration', 'local', 'description', 'categories', 'programs']
+        fields = ['id', 'title', 'duration', 'local', 'description', 'programs']
+
+    def create(self, validated_data):
+        programs_data = validated_data.pop('programs', [])
+        event = Event.objects.create(**validated_data)
+        for program_data in programs_data:
+            Program.objects.create(event=event, **program_data)
+        return event
