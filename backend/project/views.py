@@ -17,7 +17,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
             return JsonResponse(ProjectSerializer(projects, many=True).data, safe=False)
         
     
-        def get(self, id, *args, **kwargs):
+        def get(self, id):
             try:
                 project = Project.objects.get(id=id)
             except Project.DoesNotExist:
@@ -26,33 +26,28 @@ class ProjectViewSet(viewsets.ModelViewSet):
         
     
         @csrf_exempt
-        def create(request, *args, **kwargs):
+        def create(request):
             data = json.loads(request.body)
             project = Project.objects.create(**data)
             return JsonResponse(ProjectSerializer(project).data, safe=False)
         
     
         @csrf_exempt
-        def update(request, id, *args, **kwargs):
+        def update(request, id):
             data = json.loads(request.body)
-            project = Project.objects.get(id=id)
-            project.title = data['title']
-            project.description = data['description']
-            project.registration_date_start = data['registration_date_start']
-            project.registration_date_end = data['registration_date_end']
-            project.validity_date_start = data['validity_date_start']
-            project.validity_date_end = data['validity_date_end']
-            project.vacancies = data['vacancies']
-            project.value = data['value']
-            project.duration = data['duration']
-            project.link = data['link']
-            project.offerer = data['offerer']
-            project.save()
-            return JsonResponse(ProjectSerializer(project).data, safe=False)
+            try:
+                project = Project.objects.get(id=id)
+            except Project.DoesNotExist:
+                return JsonResponse({'error': 'Project not found'}, status=404)
+            serializer = ProjectSerializer(project, data=data)
+            if serializer.is_valid():
+                serializer.save()
+                return JsonResponse(serializer.data)
+            return JsonResponse(serializer.errors, status=400)
         
     
         @csrf_exempt
-        def delete(request, id, *args, **kwargs):
+        def delete(request, id):
             try:
                 project = Project.objects.get(id=id)
             except Project.DoesNotExist:
