@@ -1,25 +1,46 @@
 'use client'
-import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
-import { DateRange } from "react-day-picker";
-import { addDays, format } from "date-fns"
-import { z } from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { api } from "@/services/api"
-
+import * as z from "zod"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import Image from "next/image"
-import { cn } from "@/lib/utils";
-import { LiaCalendarWeekSolid } from "react-icons/lia"
-import { BsArrowRight } from "react-icons/bs";
 import { AiOutlineLink } from "react-icons/ai";
-import { Calendar } from "@/components/ui/calendar";
+import { BsArrowRight } from "react-icons/bs";
+import { api } from "@/services/api"
+import { cn } from "@/lib/utils"
+import { addDays, format } from "date-fns"
+import React, { useEffect, useState } from "react"
+import { DateRange } from "react-day-picker"
+import { LiaCalendarWeekSolid } from "react-icons/lia"
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { pt } from "date-fns/locale"
-import { Loading } from "@/components/loading";
+import { Calendar } from "@/components/ui/calendar"
+import { Loading } from "@/components/loading"
+import { useRouter } from "next/navigation"
+
+interface PostGraduate {
+  id: string
+  title: string
+  vacancies: number
+  duration: string
+  link: string
+  offerer: string
+  registration_date_start: Date
+  registration_date_end: Date
+}
+
+type FormProps = {
+  params: {
+    id: string
+  }
+}
+
+function createLocalDate(dateString: string): Date {
+  const [year, month, day] = dateString.split('-').map(Number);
+  return new Date(year, month - 1, day);
+}
 
 const postGraduateFormSchema = z.object({
     title: z.string()
@@ -47,65 +68,113 @@ const postGraduateFormSchema = z.object({
       required_error: "Por favor, informe a oferta do projeto.",
     }),
 })
-
+  
 type PostGraduateFormValues = z.infer<typeof postGraduateFormSchema>
 
-export default function CreatePostGraduate() {
-    const router = useRouter();
+export default function EditPostGraduate({ params: { id } }: FormProps) {
+  const router = useRouter()
+  let graduation = {} as PostGraduate
 
-    const [dateRegistration, setDateRegistration] = useState<DateRange | undefined>({
-        from: new Date(),
-        to: addDays(new Date(), 20),
+  const [loading, setLoading] = useState(true);
+
+  const [dateRegistration, setDateRegistration] = React.useState<DateRange | undefined>({
+    from: graduation.registration_date_start,
+    to: graduation.registration_date_end,
+  })
+
+
+  async function getGraduation() {
+    const response = await api(`/api/graduation/get/${id}/`, {
+      method: 'GET'
     })
 
-    const [isLoading, setIsLoading] = useState(false)
+    graduation = (await response.json()) as PostGraduate
 
-    const form = useForm<PostGraduateFormValues>({
-        resolver: zodResolver(postGraduateFormSchema),
-        defaultValues: {
-          title: "",
-          vacancies: "",
-          duration: "",
-          link: "",
-          offerer: "",
-          registration_date: {
-            from: new Date(),
-            to: addDays(new Date(), 20),
-          },
-        }
-    })
+    form.reset({
+      title: graduation.title || "",
+      vacancies: graduation.vacancies ? graduation.vacancies.toString() : "",
+      duration: graduation.duration || "",
+      link: graduation.link || "",
+      offerer: graduation.offerer || "",
+      registration_date: {
+        from: createLocalDate(graduation.registration_date_start.toString()),
+        to: createLocalDate(graduation.registration_date_end.toString())
+      },
+    });
 
-    async function onSubmit(data: PostGraduateFormValues) {
-        const { title, vacancies, duration, link, offerer, registration_date } = data
+    setLoading(false);
     
-        const response = await api("/api/graduation/create/", {
-          method: "POST",
-          body: JSON.stringify({
-            title,
-            vacancies,
-            duration,
-            link,
-            offerer,
-            registration_date_start: registration_date.from.toISOString().split('T')[0],
-            registration_date_end: registration_date.to.toISOString().split('T')[0],
-          }),
-        })
-        
-        router.push("/post-graduate")
+    return response
+  }
+
+  const form = useForm<PostGraduateFormValues>({
+    resolver: zodResolver(postGraduateFormSchema),
+    defaultValues: {
+      title: graduation?.title || "",
+      vacancies: graduation?.vacancies ? graduation.vacancies.toString() : "",
+      duration: graduation?.duration || "",
+      link: graduation?.link || "",
+      offerer: graduation?.offerer || "",
+      registration_date: {
+        from: graduation?.registration_date_start || new Date(),
+        to: graduation?.registration_date_end || addDays(new Date(), 20)
+      },
+    },
+  })
+
+  async function onSubmit(data: PostGraduateFormValues) {
+    const { title, vacancies,  duration, link, offerer, registration_date } = data
+
+    await api(`/api/graduation/update/${id}/`, {
+      method: "PUT",
+      body: JSON.stringify({
+        title,
+        vacancies,
+        duration,
+        link,
+        offerer,
+        registration_date_start: registration_date.from.toISOString().split('T')[0],
+        registration_date_end: registration_date.to.toISOString().split('T')[0],
+      }),
+    })
+
+    router.push(`/post-graduate/view/${id}`)
+  }
+
+  useEffect(() => {
+    async function fetchData() {
+      await getGraduation();
+
+      setDateRegistration({
+        from: createLocalDate(graduation.registration_date_start.toString()),
+        to: createLocalDate(graduation.registration_date_end.toString())
+      });
     }
 
-    return (
-        <div className="grid grid-cols-4 w-screen h-screen">
-          <div className="flex items-center">
-            <Image 
-              src="/images/pattern.png"
-              width={300}
-              height={350}
-              alt="Pattern Beca"
-              className="scale-x-[-1]"
-            />
+    try {
+      fetchData();
+    } catch (error) {
+      console.log(error)
+    }
+  }, []);
+
+  return (
+    <div className="grid grid-cols-4 w-screen h-screen">
+      <div className="flex items-center">
+        <Image 
+            src="/images/pattern.png"
+            width={300}
+            height={350}
+            alt="Pattern Beca"
+            className="scale-x-[-1]"
+        />
+      </div>
+      <Form {...form}>
+        { loading ? ( 
+          <div className="col-span-3 flex items-center justify-center">
+            <Loading />
           </div>
-          <Form {...form}>
+          ) : (
             <form onSubmit={form.handleSubmit(onSubmit)} className="col-span-3 flex items-center justify-around">
               <div className="flex items-end justify-around">
                 <div className="space-y-8 p-9 w-[60%]">
@@ -232,20 +301,15 @@ export default function CreatePostGraduate() {
                   />
                   
                 </div>
-                <Button className="flex-col w-[124px] font-normal" type="submit" variant={"ghost"} onClick={() => setIsLoading(true)}>
-                    {isLoading ? (
-                        <Loading />
-                    ):(
-                        <div>
-                            Enviar
-                            <BsArrowRight className="mt-1 w-14 h-7" />
-                        </div>
-                    )}
+                <Button className="flex-col w-[124px] font-normal" type="submit" variant={"ghost"}>
+                  Enviar
+                  <BsArrowRight className="mt-1 w-14 h-7" />
                 </Button>
               </div>
             </form>
-          </Form>
-        </div>
-    )
-    
+        )} 
+      </Form>
+    </div>
+  )
 }
+

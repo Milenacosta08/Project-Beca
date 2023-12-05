@@ -22,6 +22,7 @@ export default function Navbar() {
         Sair
         <RiDoorOpenFill size={20} />
       </Button>
+      
     </div>
   )
 }
