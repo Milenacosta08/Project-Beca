@@ -39,11 +39,12 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'corsheaders',
     'rest_framework',
+    'rest_framework.authtoken',
     'cpae.apps.CpaeConfig',
     'graduations.apps.GraduationsConfig',
     'project.apps.ProjectConfig',
     'event.apps.EventConfig',
-    'rest_framework.authtoken',
+    'egress.apps.EgressConfig',
 ]
 
 MIDDLEWARE = [
