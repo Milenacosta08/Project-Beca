@@ -1,4 +1,5 @@
 /** @type {import('tailwindcss').Config} */
+
 module.exports = {
   darkMode: ["class"],
   content: [
@@ -15,6 +16,7 @@ module.exports = {
         "2xl": "1400px",
       },
     },
+
     extend: {
       maxWidth: {
         '300': '300px',

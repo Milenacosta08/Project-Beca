@@ -8,7 +8,8 @@ import { IconBaseProps } from 'react-icons'
 export interface InputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {
     name: string
-    label?: string,
+    className?: string
+    label?: string
     icon?: ComponentType<IconBaseProps>
   }
 
