@@ -7,6 +7,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import Link from "next/link";
 import { IoMdArrowDropdown } from "react-icons/io";
 
 export default function ButtonLogin() {
@@ -20,9 +21,11 @@ export default function ButtonLogin() {
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-auto bg-background_options">
         <DropdownMenuGroup>
-          <DropdownMenuItem className="text-blue_primary h hover:cursor-pointer">
-            Egresso
-          </DropdownMenuItem>
+          <Link href="/login/egress">
+            <DropdownMenuItem className="text-blue_primary h hover:cursor-pointer">
+              Egresso
+            </DropdownMenuItem>
+          </Link>
           <DropdownMenuSeparator className="bg-border_separator h-[1px]" />
           <DropdownMenuItem className="text-blue_primary hover:cursor-pointer">
             Empresa
